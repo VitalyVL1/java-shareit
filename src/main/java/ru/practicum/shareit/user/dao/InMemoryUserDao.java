@@ -34,7 +34,9 @@ public class InMemoryUserDao implements UserDao {
 
     @Override
     public List<User> findAll() {
-        return users.values().stream().map(User::copyOf).toList();
+        return users.values().stream()
+                .map(User::copyOf)
+                .toList();
     }
 
     @Override

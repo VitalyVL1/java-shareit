@@ -4,7 +4,7 @@ import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.model.User;
 
-public class UserMaper {
+public class UserMapper {
     public static UserResponseDto toUserResponseDto(User user) {
         if (user == null) return null;
 

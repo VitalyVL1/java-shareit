@@ -16,16 +16,4 @@ public class ItemResponseDto {
     private String description;
     private boolean available;
     private Long request;
-
-    public static ItemResponseDto toItemDto(Item item) {
-        return ItemResponseDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.isAvailable())
-                .request(
-                        item.getRequest() != null ?
-                                item.getRequest().getId() : null)
-                .build();
-    }
 }

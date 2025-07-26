@@ -8,7 +8,7 @@ import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
-import ru.practicum.shareit.user.mapper.UserMaper;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -23,14 +23,14 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto save(UserCreateDto dto) {
         log.info("Saving user: {}", dto);
 
-        return UserMaper.toUserResponseDto(userDao.save(UserMaper.toUser(dto)));
+        return UserMapper.toUserResponseDto(userDao.save(UserMapper.toUser(dto)));
     }
 
     @Override
     public UserResponseDto findById(Long id) {
         log.info("Finding user by id: {}", id);
         return userDao.findById(id)
-                .map(UserMaper::toUserResponseDto)
+                .map(UserMapper::toUserResponseDto)
                 .orElseThrow(() -> new NotFoundException("User", id));
     }
 
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     public List<UserResponseDto> findAll() {
         log.info("Finding all users");
         return userDao.findAll().stream()
-                .map(UserMaper::toUserResponseDto)
+                .map(UserMapper::toUserResponseDto)
                 .toList();
     }
 
@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
         dto.getName().ifPresent(user::setName);
         dto.getEmail().ifPresent(user::setEmail);
 
-        return UserMaper.toUserResponseDto(userDao.update(user));
+        return UserMapper.toUserResponseDto(userDao.update(user));
     }
 
     @Override

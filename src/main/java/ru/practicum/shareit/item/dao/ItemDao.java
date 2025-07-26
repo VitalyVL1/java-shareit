@@ -13,6 +13,10 @@ public interface ItemDao {
 
     List<Item> findAll();
 
+    List<Item> findByUser(User user);
+
+    List<Item> search(String query);
+
     Item update(Item item);
 
     void deleteById(Long id);

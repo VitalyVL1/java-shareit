@@ -11,6 +11,8 @@ import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 
+import java.util.List;
+
 /**
  * TODO Sprint add-controllers.
  */
@@ -32,6 +34,24 @@ public class ItemController {
     public ItemResponseDto updateItem(
             @Valid @RequestBody ItemUpdateDto dto,
             @RequestHeader("X-Sharer-User-Id") Long userId) {
+
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<ItemResponseDto> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") Long userId) {
+
+    }
+
+    @GetMapping("/{itemId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ItemResponseDto> getItemById(@PathVariable Long itemId) {
+
+    }
+
+    @GetMapping("/search")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ItemResponseDto> searchItems(@RequestParam("text") String text) {
 
     }
 }
