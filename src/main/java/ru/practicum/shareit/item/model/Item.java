@@ -1,8 +1,5 @@
 package ru.practicum.shareit.item.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.AssertFalse;
-import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -21,15 +18,19 @@ public class Item {
 
     @NotBlank(message = "Название должно быть указано")
     private String name;
+
+    @NotBlank(message = "Описание должно быть указано")
     private String description;
-    private boolean available;
+
+    @NotNull(message = "Доступность вещи должна быть задана")
+    private Boolean available;
 
     @NotNull(message = "Владелец должен быть указан")
     private User owner;
 
     private ItemRequest request;
 
-    public Item copyOf(){
+    public Item copyOf() {
         return this.toBuilder().build();
     }
 }

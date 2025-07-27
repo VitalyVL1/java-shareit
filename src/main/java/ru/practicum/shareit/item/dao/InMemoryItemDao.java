@@ -55,6 +55,7 @@ public class InMemoryItemDao implements ItemDao {
         }
         String lowerQuery = query.toLowerCase();
         return items.values().stream()
+                .filter(Item::getAvailable)
                 .filter(item -> item.getName().toLowerCase().contains(lowerQuery) ||
                         item.getDescription().toLowerCase().contains(lowerQuery))
                 .map(Item::copyOf)
@@ -66,7 +67,7 @@ public class InMemoryItemDao implements ItemDao {
         Item itemToUpdate = items.get(item.getId());
         itemToUpdate.setName(item.getName());
         itemToUpdate.setDescription(item.getDescription());
-        itemToUpdate.setAvailable(item.isAvailable());
+        itemToUpdate.setAvailable(item.getAvailable());
         return itemToUpdate;
     }
 

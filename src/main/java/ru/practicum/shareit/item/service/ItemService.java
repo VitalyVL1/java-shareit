@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.dto.ItemCreateDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
-import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
@@ -20,7 +19,7 @@ public interface ItemService {
 
     List<ItemResponseDto> search(String query);
 
-    Item update(Long userId, Long itemId, ItemUpdateDto dto);
+    ItemResponseDto update(Long userId, Long itemId, ItemUpdateDto dto);
 
     void deleteById(Long id);
 

@@ -13,7 +13,7 @@ public class ItemMapper {
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
-                .available(item.isAvailable())
+                .available(item.getAvailable())
                 .request(
                         item.getRequest() != null ?
                                 item.getRequest().getId() : null)
@@ -26,7 +26,7 @@ public class ItemMapper {
         return Item.builder()
                 .name(dto.getName())
                 .description(dto.getDescription())
-                .available(dto.isAvailable())
+                .available(dto.getAvailable())
                 .request(dto.getRequest()) //если данные будут передаваться в теле запроса
                 .owner(user)
                 .build();
