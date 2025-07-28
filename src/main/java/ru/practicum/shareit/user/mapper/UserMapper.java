@@ -4,6 +4,9 @@ import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.Collections;
+import java.util.List;
+
 public class UserMapper {
     public static UserResponseDto toUserResponseDto(User user) {
         if (user == null) return null;
@@ -22,5 +25,12 @@ public class UserMapper {
                 .name(dto.getName())
                 .email(dto.getEmail())
                 .build();
+    }
+
+    public static List<UserResponseDto> toUserResponseDtoList(List<User> users) {
+        if (users == null || users.isEmpty()) return Collections.emptyList();
+        return users.stream()
+                .map(UserMapper::toUserResponseDto)
+                .toList();
     }
 }

@@ -45,17 +45,13 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemResponseDto> findAll() {
         log.info("Finding all items");
-        return itemDao.findAll().stream()
-                .map(ItemMapper::toItemResponseDto)
-                .toList();
+        return ItemMapper.toItemResponseDtoList(itemDao.findAll());
     }
 
     @Override
     public List<ItemResponseDto> findByUserId(Long userId) {
         log.info("Finding all items by userId: {}", userId);
-        return itemDao.findByUser(getUserById(userId)).stream()
-                .map(ItemMapper::toItemResponseDto)
-                .toList();
+        return ItemMapper.toItemResponseDtoList(itemDao.findByUser(getUserById(userId)));
     }
 
     @Override
@@ -63,9 +59,7 @@ public class ItemServiceImpl implements ItemService {
         if (!StringUtils.hasText(query)) {
             return Collections.emptyList();
         }
-        return itemDao.search(query.trim()).stream()
-                .map(ItemMapper::toItemResponseDto)
-                .toList();
+        return ItemMapper.toItemResponseDtoList(itemDao.search(query.trim()));
     }
 
     @Override

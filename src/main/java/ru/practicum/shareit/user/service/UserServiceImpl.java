@@ -37,9 +37,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserResponseDto> findAll() {
         log.info("Finding all users");
-        return userDao.findAll().stream()
-                .map(UserMapper::toUserResponseDto)
-                .toList();
+        return UserMapper.toUserResponseDtoList(userDao.findAll());
     }
 
     @Override
