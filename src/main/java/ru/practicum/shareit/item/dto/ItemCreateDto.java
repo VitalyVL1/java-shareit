@@ -1,21 +1,14 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.item.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.user.model.User;
 
 @Data
-@Builder(toBuilder = true)
-@NoArgsConstructor
-@AllArgsConstructor
-public class Item {
-    private Long id;
-
+@Builder
+public class ItemCreateDto {
     @NotBlank(message = "Название должно быть указано")
     private String name;
 
@@ -25,12 +18,5 @@ public class Item {
     @NotNull(message = "Доступность вещи должна быть задана")
     private Boolean available;
 
-    @NotNull(message = "Владелец должен быть указан")
-    private User owner;
-
-    private ItemRequest request;
-
-    public Item copyOf() {
-        return this.toBuilder().build();
-    }
+    private ItemRequest request; //Если будут передаваться данные о запросе в теле
 }
