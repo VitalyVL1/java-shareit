@@ -29,7 +29,8 @@ public class ItemRequest {
 
     @NotNull(message = "Пользователь должен быть указан")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "requestor_id")
+    @ToString.Exclude
     User requestor;
 
     @Builder.Default

@@ -3,7 +3,7 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.user.dao.UserDao;
+import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
@@ -16,43 +16,43 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final UserDao userDao;
+    private final UserRepository userRepository;
 
     @Override
     public UserResponseDto save(UserCreateDto dto) {
-        return UserMapper.toUserResponseDto(userDao.save(UserMapper.toUser(dto)));
+        return UserMapper.toUserResponseDto(userRepository.save(UserMapper.toUser(dto)));
     }
 
     @Override
     public UserResponseDto findById(Long id) {
-        return userDao.findById(id)
+        return userRepository.findById(id)
                 .map(UserMapper::toUserResponseDto)
                 .orElseThrow(() -> new NotFoundException("User", id));
     }
 
     @Override
     public List<UserResponseDto> findAll() {
-        return UserMapper.toUserResponseDtoList(userDao.findAll());
+        return UserMapper.toUserResponseDtoList(userRepository.findAll());
     }
 
     @Override
     public UserResponseDto update(Long userId, UserUpdateDto dto) {
-        User user = userDao.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User", userId));
 
         applyUpdates(user, dto);
 
-        return UserMapper.toUserResponseDto(userDao.update(user));
+        return UserMapper.toUserResponseDto(userRepository.save(user));
     }
 
     @Override
     public void deleteById(Long id) {
-        userDao.deleteById(id);
+        userRepository.deleteById(id);
     }
 
     @Override
     public void clear() {
-        userDao.clear();
+        userRepository.deleteAll();
     }
 
     private void applyUpdates(User user, UserUpdateDto dto) {

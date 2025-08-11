@@ -31,10 +31,6 @@ public class User {
     @Column
     private String email;
 
-    public User copyOf() {
-        return this.toBuilder().build();
-    }
-
     @Override
     public final boolean equals(Object object) {
         if (this == object) return true;

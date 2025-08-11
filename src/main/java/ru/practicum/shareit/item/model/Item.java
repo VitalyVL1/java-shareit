@@ -33,12 +33,12 @@ public class Item {
     private String description;
 
     @NotNull(message = "Доступность вещи должна быть задана")
-    @Column
+    @Column(name = "is_available")
     private Boolean available;
 
     @NotNull(message = "Владелец должен быть указан")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "owner_id")
     @ToString.Exclude
     private User owner;
 
@@ -46,10 +46,6 @@ public class Item {
     @JoinColumn(name = "request_id")
     @ToString.Exclude
     private ItemRequest request;
-
-    public Item copyOf() {
-        return this.toBuilder().build();
-    }
 
     @Override
     public final boolean equals(Object object) {

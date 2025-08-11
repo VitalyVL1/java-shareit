@@ -4,14 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.dao.ItemDao;
+import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemCreateDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.dto.UpdateItemCommand;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.dao.UserDao;
+import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.Collections;
@@ -23,31 +23,32 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
-    private final ItemDao itemDao;
-    private final UserDao userDao;
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
 
     @Override
     public ItemResponseDto save(Long userId, ItemCreateDto dto) {
         User owner = getUserById(userId);
         Item item = ItemMapper.toItem(owner, dto);
-        return ItemMapper.toItemResponseDto(itemDao.save(item));
+        return ItemMapper.toItemResponseDto(itemRepository.save(item));
     }
 
     @Override
     public ItemResponseDto findById(Long id) {
-        return itemDao.findById(id)
+        return itemRepository.findById(id)
                 .map(ItemMapper::toItemResponseDto)
                 .orElseThrow(() -> new NotFoundException("Item", id));
     }
 
     @Override
     public List<ItemResponseDto> findAll() {
-        return ItemMapper.toItemResponseDtoList(itemDao.findAll());
+        return ItemMapper.toItemResponseDtoList(itemRepository.findAll());
     }
 
     @Override
     public List<ItemResponseDto> findByUserId(Long userId) {
-        return ItemMapper.toItemResponseDtoList(itemDao.findByUser(getUserById(userId)));
+        getUserById(userId);
+        return ItemMapper.toItemResponseDtoList(itemRepository.findAllByOwnerId(userId));
     }
 
     @Override
@@ -55,12 +56,13 @@ public class ItemServiceImpl implements ItemService {
         if (!StringUtils.hasText(query)) {
             return Collections.emptyList();
         }
-        return ItemMapper.toItemResponseDtoList(itemDao.search(query.trim()));
+        return ItemMapper.toItemResponseDtoList(itemRepository
+                .search(query.trim()));
     }
 
     @Override
     public ItemResponseDto update(UpdateItemCommand command) {
-        Item itemToUpdate = itemDao.findById(command.itemId())
+        Item itemToUpdate = itemRepository.findById(command.itemId())
                 .orElseThrow(() -> new NotFoundException("Item", command.itemId()));
 
         if (!Objects.equals(itemToUpdate.getOwner().getId(), command.userId())) {
@@ -68,21 +70,21 @@ public class ItemServiceImpl implements ItemService {
         }
 
         applyUpdates(itemToUpdate, command.updateData());
-        return ItemMapper.toItemResponseDto(itemDao.update(itemToUpdate));
+        return ItemMapper.toItemResponseDto(itemRepository.save(itemToUpdate));
     }
 
     @Override
     public void deleteById(Long id) {
-        itemDao.deleteById(id);
+        itemRepository.deleteById(id);
     }
 
     @Override
     public void clear() {
-        itemDao.clear();
+        itemRepository.deleteAll();
     }
 
     private User getUserById(Long userId) {
-        return userDao.findById(userId)
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User", userId));
     }
 
