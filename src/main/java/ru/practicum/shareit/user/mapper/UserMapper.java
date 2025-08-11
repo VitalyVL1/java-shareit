@@ -22,8 +22,8 @@ public class UserMapper {
         if (dto == null) return null;
 
         return User.builder()
-                .name(dto.getName())
-                .email(dto.getEmail())
+                .name(dto.name())
+                .email(dto.email())
                 .build();
     }
 

@@ -1,20 +1,14 @@
 package ru.practicum.shareit.user.dto;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
-import lombok.Data;
+import lombok.Builder;
 
-import java.util.Optional;
-
-@Data
-public class UserUpdateDto {
-    private Optional<String> name;
-
-    @Valid
-    private Optional<@Email String> email;
-
-    public UserUpdateDto(String name, String email) {
-        this.name = Optional.ofNullable(name);
-        this.email = Optional.ofNullable(email);
+public record UserUpdateDto(
+        String name,
+        @Email String email
+) {
+    @Builder
+    public static UserUpdateDto of(String name, String email) {
+        return new UserUpdateDto(name, email);
     }
 }

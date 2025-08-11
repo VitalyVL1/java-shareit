@@ -17,20 +17,20 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
-                .request(
+                .requestId(
                         item.getRequest() != null ?
                                 item.getRequest().getId() : null)
                 .build();
     }
 
+    //добавить заполнение ItemRequest после реализации этого функционала, можно через DataLoader, или третий параметр
     public static Item toItem(User user, ItemCreateDto dto) {
         if (dto == null) return null;
 
         return Item.builder()
-                .name(dto.getName())
-                .description(dto.getDescription())
-                .available(dto.getAvailable())
-                .request(dto.getRequest()) //если данные будут передаваться в теле запроса
+                .name(dto.name())
+                .description(dto.description())
+                .available(dto.available())
                 .owner(user)
                 .build();
     }

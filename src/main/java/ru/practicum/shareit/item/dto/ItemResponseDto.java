@@ -1,18 +1,15 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class ItemResponseDto {
-    private Long id;
-    private String name;
-    private String description;
-    private boolean available;
-    private Long request;
+public record ItemResponseDto(
+        Long id,
+        String name,
+        String description,
+        boolean available,
+        Long requestId) {
+    @Builder
+    public static ItemResponseDto of(Long id, String name, String description, Boolean available, Long requestId) {
+        return new ItemResponseDto(id, name, description, available, requestId);
+    }
 }

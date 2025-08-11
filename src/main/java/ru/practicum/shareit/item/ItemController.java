@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemCreateDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
+import ru.practicum.shareit.item.dto.UpdateItemCommand;
 import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.List;
@@ -36,10 +39,11 @@ public class ItemController {
     @ResponseStatus(HttpStatus.OK)
     public ItemResponseDto updateItem(
             @Valid @RequestBody ItemUpdateDto dto,
-            @PathVariable Long itemId,
+            @PathVariable @Valid @NonNull @Positive Long itemId,
             @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Updating existing item: {}", dto);
-        return itemService.update(userId, itemId, dto);
+        UpdateItemCommand command = UpdateItemCommand.of(userId, itemId, dto);
+        return itemService.update(command);
     }
 
     @GetMapping

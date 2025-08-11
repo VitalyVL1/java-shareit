@@ -1,7 +1,6 @@
 package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dao.UserDao;
@@ -12,23 +11,20 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
 
     @Override
     public UserResponseDto save(UserCreateDto dto) {
-        log.info("Saving user: {}", dto);
-
         return UserMapper.toUserResponseDto(userDao.save(UserMapper.toUser(dto)));
     }
 
     @Override
     public UserResponseDto findById(Long id) {
-        log.info("Finding user by id: {}", id);
         return userDao.findById(id)
                 .map(UserMapper::toUserResponseDto)
                 .orElseThrow(() -> new NotFoundException("User", id));
@@ -36,32 +32,31 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserResponseDto> findAll() {
-        log.info("Finding all users");
         return UserMapper.toUserResponseDtoList(userDao.findAll());
     }
 
     @Override
     public UserResponseDto update(Long userId, UserUpdateDto dto) {
-        log.info("Updating user with id = {}", userId);
-
         User user = userDao.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User", userId));
 
-        dto.getName().ifPresent(user::setName);
-        dto.getEmail().ifPresent(user::setEmail);
+        applyUpdates(user, dto);
 
         return UserMapper.toUserResponseDto(userDao.update(user));
     }
 
     @Override
     public void deleteById(Long id) {
-        log.info("Deleting user with id = {}", id);
         userDao.deleteById(id);
     }
 
     @Override
     public void clear() {
-        log.info("Clearing all users");
         userDao.clear();
+    }
+
+    private void applyUpdates(User user, UserUpdateDto dto) {
+        Optional.ofNullable(dto.name()).ifPresent(user::setName);
+        Optional.ofNullable(dto.email()).ifPresent(user::setEmail);
     }
 }
