@@ -33,17 +33,22 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingResponseDto save(Long bookerId, BookingCreateDto dto) {
-        User user = getUserById(bookerId);
-        Item item = getItemById(dto.itemId());
-
-        if (!item.getAvailable()) {
-            throw new UnavailableItemException(
-                    item.getId(),
-                    "Item with id " + dto.itemId() + " is not available for booking"
-            );
+        if (!userRepository.existsById(bookerId)) {
+            throw new NotFoundException("User", bookerId);
         }
 
-        Booking booking = BookingMapper.toBooking(user, item, dto);
+        Item item = itemRepository.findById(dto.itemId())
+                .orElseThrow(() -> new NotFoundException("Item", dto.itemId()));
+
+        if (!item.getAvailable()) {
+            throw new UnavailableItemException(item.getId(), "Item is not available");
+        }
+
+        if (bookingRepository.existsActiveBookingForItem(dto.itemId(), dto.start(), dto.end())) {
+            throw new UnavailableItemException(dto.itemId(), "Item already booked for this period");
+        }
+
+        Booking booking = BookingMapper.toBooking(userRepository.getReferenceById(bookerId), item, dto);
         return BookingMapper.toBookingResponseDto(bookingRepository.save(booking));
     }
 

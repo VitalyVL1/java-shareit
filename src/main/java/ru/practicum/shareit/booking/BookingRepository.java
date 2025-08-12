@@ -2,9 +2,12 @@ package ru.practicum.shareit.booking;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
@@ -19,4 +22,14 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByBooker_IdAndItem_Id(long bookingId, long itemId, Sort sort);
 
     List<Booking> findAllByItem_IdAndStatus(long itemId, Status status);
+
+    @Query("""
+            SELECT COUNT(b) > 0 FROM Booking b
+            WHERE b.item.id = :itemId AND b.status = 'APPROVED'
+            AND NOT (b.end <= :start OR b.start >= :end)
+            """)
+    boolean existsActiveBookingForItem(
+            @Param("itemId") Long itemId,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end);
 }
