@@ -6,6 +6,4 @@ public record CommentCreateOrUpdateDto(
         @NotBlank(message = "Текст комментария не может быть пустым")
         String text
 ) {
-    public CommentCreateOrUpdateDto {
-    }
 }

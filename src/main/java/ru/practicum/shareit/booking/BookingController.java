@@ -28,8 +28,7 @@ public class BookingController {
             @RequestHeader("X-Sharer-User-Id") Long userId
     ) {
         log.info("Adding a booking for item {} by booker {}", dto, userId);
-        BookingResponseDto responseDto = bookingService.save(userId, dto);
-        return responseDto;
+        return bookingService.save(userId, dto);
     }
 
     @PatchMapping("/{bookingId}")

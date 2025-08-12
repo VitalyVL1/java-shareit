@@ -54,8 +54,8 @@ public class ItemServiceImpl implements ItemService {
 
         if (item.getOwner().getId().equals(userId)) {
             lastBooking = bookings.stream()
-                    .filter(b -> b.getEnd().isBefore(now))
                     .map(Booking::getEnd)
+                    .filter(end -> end.isBefore(now))
                     .max(Comparator.naturalOrder())
                     .orElse(null);
 

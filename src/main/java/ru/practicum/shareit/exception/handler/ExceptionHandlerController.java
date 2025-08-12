@@ -13,7 +13,6 @@ import ru.practicum.shareit.exception.response.ValidationErrorResponse;
 import ru.practicum.shareit.exception.response.Violation;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestControllerAdvice
 @Slf4j
@@ -30,7 +29,7 @@ public class ExceptionHandlerController {
                         error.getField(),
                         error.getDefaultMessage(),
                         error.getRejectedValue()))
-                .collect(Collectors.toList());
+                .toList();
 
         return new ValidationErrorResponse("Validation failed", violations);
     }
@@ -46,7 +45,7 @@ public class ExceptionHandlerController {
                         violation.getPropertyPath().toString(),
                         violation.getMessage(),
                         violation.getInvalidValue()))
-                .collect(Collectors.toList());
+                .toList();
 
         return new ValidationErrorResponse("Constraint violation", violations);
     }
