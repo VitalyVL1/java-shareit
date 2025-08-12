@@ -42,13 +42,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemResponseDto> findAll() {
-        return ItemMapper.toItemResponseDtoList(itemRepository.findAll());
+        return ItemMapper.toItemResponseDto(itemRepository.findAll());
     }
 
     @Override
     public List<ItemResponseDto> findByUserId(Long userId) {
         getUserById(userId);
-        return ItemMapper.toItemResponseDtoList(itemRepository.findAllByOwnerId(userId));
+        return ItemMapper.toItemResponseDto(itemRepository.findAllByOwnerId(userId));
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ItemServiceImpl implements ItemService {
         if (!StringUtils.hasText(query)) {
             return Collections.emptyList();
         }
-        return ItemMapper.toItemResponseDtoList(itemRepository
+        return ItemMapper.toItemResponseDto(itemRepository
                 .search(query.trim()));
     }
 

@@ -9,7 +9,6 @@ public record ItemResponseDto(
         boolean available,
         Long requestId) {
     @Builder
-    public static ItemResponseDto of(Long id, String name, String description, Boolean available, Long requestId) {
-        return new ItemResponseDto(id, name, description, available, requestId);
+    public ItemResponseDto {
     }
 }

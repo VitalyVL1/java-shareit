@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.mapper;
 
 import ru.practicum.shareit.item.dto.ItemCreateDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
+import ru.practicum.shareit.item.dto.ItemShortDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -23,6 +24,30 @@ public class ItemMapper {
                 .build();
     }
 
+    public static List<ItemResponseDto> toItemResponseDto(List<Item> items) {
+        if (items == null || items.isEmpty()) return Collections.emptyList();
+        return items.stream()
+                .map(ItemMapper::toItemResponseDto)
+                .toList();
+    }
+
+    public static ItemShortDto toItemShortDto(Item item) {
+        if (item == null) return null;
+
+        return ItemShortDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .build();
+    }
+
+    public static List<ItemShortDto> toItemShortDto(List<Item> items) {
+        if (items == null || items.isEmpty()) return Collections.emptyList();
+
+        return items.stream()
+                .map(ItemMapper::toItemShortDto)
+                .toList();
+    }
+
     //добавить заполнение ItemRequest после реализации этого функционала, можно через DataLoader, или третий параметр
     public static Item toItem(User user, ItemCreateDto dto) {
         if (dto == null) return null;
@@ -33,12 +58,5 @@ public class ItemMapper {
                 .available(dto.available())
                 .owner(user)
                 .build();
-    }
-
-    public static List<ItemResponseDto> toItemResponseDtoList(List<Item> items) {
-        if (items == null || items.isEmpty()) return Collections.emptyList();
-        return items.stream()
-                .map(ItemMapper::toItemResponseDto)
-                .toList();
     }
 }

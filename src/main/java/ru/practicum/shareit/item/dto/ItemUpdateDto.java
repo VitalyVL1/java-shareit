@@ -8,7 +8,6 @@ public record ItemUpdateDto(
         Boolean available
 ) {
     @Builder
-    public static ItemUpdateDto of(String name, String description, Boolean available) {
-        return new ItemUpdateDto(name, description, available);
+    public ItemUpdateDto {
     }
 }

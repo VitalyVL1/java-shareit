@@ -8,7 +8,6 @@ public record UserUpdateDto(
         @Email String email
 ) {
     @Builder
-    public static UserUpdateDto of(String name, String email) {
-        return new UserUpdateDto(name, email);
+    public UserUpdateDto {
     }
 }

@@ -17,7 +17,6 @@ public record ItemCreateDto(
         Long requestId // если данные будут передаваться в теле
 ) {
     @Builder
-    public static ItemCreateDto of(String name, String description, Boolean available, Long requestId) {
-        return new ItemCreateDto(name, description, available, requestId);
+    public ItemCreateDto {
     }
 }

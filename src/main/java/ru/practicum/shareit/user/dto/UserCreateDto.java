@@ -13,7 +13,6 @@ public record UserCreateDto(
         String email
 ) {
     @Builder
-    public static UserCreateDto of(String name, String email) {
-        return new UserCreateDto(name, email);
+    public UserCreateDto {
     }
 }

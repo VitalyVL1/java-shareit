@@ -8,7 +8,6 @@ public record UserResponseDto(
         String email
 ) {
     @Builder
-    public static UserResponseDto of(Long id, String name, String email) {
-        return new UserResponseDto(id, name, email);
+    public UserResponseDto {
     }
 }
