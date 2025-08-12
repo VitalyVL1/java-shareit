@@ -7,10 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.exception.AccessForbiddenException;
-import ru.practicum.shareit.exception.DuplicatedDataException;
-import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.UnavailableItemException;
+import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.exception.response.ErrorResponse;
 import ru.practicum.shareit.exception.response.ValidationErrorResponse;
 import ru.practicum.shareit.exception.response.Violation;
@@ -26,7 +23,7 @@ public class ExceptionHandlerController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ValidationErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.error("Validation error: {}", e.getMessage(), e);
+        log.warn("Validation error: {}", e.getMessage(), e);
 
         List<Violation> violations = e.getBindingResult().getFieldErrors().stream()
                 .map(error -> new Violation(
@@ -42,7 +39,7 @@ public class ExceptionHandlerController {
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ValidationErrorResponse handleConstraintViolation(ConstraintViolationException e) {
-        log.error("Constraint violation: {}", e.getMessage(), e);
+        log.warn("Constraint violation: {}", e.getMessage(), e);
 
         List<Violation> violations = e.getConstraintViolations().stream()
                 .map(violation -> new Violation(
@@ -57,24 +54,35 @@ public class ExceptionHandlerController {
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(NotFoundException e) {
-        log.error("Not found: {}", e.getMessage(), e);
+        log.warn("Not found: {}", e.getMessage(), e);
         return new ErrorResponse(e.getEntityName(), e.getMessage());
     }
 
     @ExceptionHandler(UnavailableItemException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleUnavailableItemException(UnavailableItemException ex) {
-        log.error("Failed to book item (ID: {}): {}", ex.getItemId(), ex.getMessage(), ex);
+        log.warn("Failed to book item (ID: {}): {}", ex.getItemId(), ex.getMessage(), ex);
         return new ErrorResponse(
                 "ITEM_UNAVAILABLE",
                 "Item with ID " + ex.getItemId() + " is not available: " + ex.getMessage()
         );
     }
 
+    @ExceptionHandler(CommentNotAllowedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleCommentNotAllowedException(CommentNotAllowedException ex) {
+        log.warn("Comment not allowed: {}", ex.getMessage(), ex);
+        return new ErrorResponse(
+                "COMMENT_NOT_ALLOWED",
+                "Comment to " + ex.getItemId() + " is not allowed to user: " + ex.getUserId()
+                        + "! Reason: " + ex.getMessage()
+        );
+    }
+
     @ExceptionHandler(AccessForbiddenException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorResponse handleAccessForbiddenException(UnavailableItemException ex) {
-        log.error("Failed to access item (ID: {}): {}", ex.getItemId(), ex.getMessage(), ex);
+    public ErrorResponse handleAccessForbiddenException(AccessForbiddenException ex) {
+        log.warn("Failed to access item by user: {}: {}", ex.getUserId(), ex.getMessage(), ex);
         return new ErrorResponse(
                 "ACCESS_FORBIDDEN",
                 ex.getMessage()
@@ -84,7 +92,7 @@ public class ExceptionHandlerController {
     @ExceptionHandler(DuplicatedDataException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleDuplicatedDataException(DuplicatedDataException e) {
-        log.error(e.getMessage(), e);
+        log.warn(e.getMessage(), e);
         return new ErrorResponse(e.getFieldName(), e.getMessage());
     }
 
@@ -92,7 +100,7 @@ public class ExceptionHandlerController {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleAllExceptions(Exception e) {
-        log.error("Unexpected error: {}", e.getMessage(), e);
+        log.warn("Unexpected error: {}", e.getMessage(), e);
         return new ErrorResponse("internal-error", "An unexpected error occurred");
     }
 }

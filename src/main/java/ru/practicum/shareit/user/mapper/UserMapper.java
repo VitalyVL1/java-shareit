@@ -27,7 +27,7 @@ public class UserMapper {
                 .build();
     }
 
-    public static List<UserResponseDto> toUserResponseDtoList(List<User> users) {
+    public static List<UserResponseDto> toUserResponseDto(List<User> users) {
         if (users == null || users.isEmpty()) return Collections.emptyList();
         return users.stream()
                 .map(UserMapper::toUserResponseDto)

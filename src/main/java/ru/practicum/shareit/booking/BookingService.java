@@ -1,8 +1,8 @@
 package ru.practicum.shareit.booking;
 
+import ru.practicum.shareit.booking.dto.BookingAprovedDto;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
-import ru.practicum.shareit.booking.dto.BookingAprovedDto;
 import ru.practicum.shareit.booking.model.State;
 
 import java.util.List;

@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingAprovedDto;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
@@ -22,12 +23,14 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
+    @Transactional
     @Override
     public BookingResponseDto save(Long bookerId, BookingCreateDto dto) {
         User user = getUserById(bookerId);
@@ -63,7 +66,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return BookingMapper.toBookingResponseDto(
-                bookingRepository.findAllByBooker_IdAndStatus(bookerId, state.name(), sort));
+                bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.valueOf(state.name()), sort));
     }
 
     @Override
@@ -78,16 +81,17 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return BookingMapper.toBookingResponseDto(
-                bookingRepository.findAllByItem_Owner_IdAndStatus(ownerId, state.name(), sort));
+                bookingRepository.findAllByItem_Owner_IdAndStatus(ownerId, Status.valueOf(state.name()), sort));
     }
 
+    @Transactional
     @Override
     public BookingResponseDto approve(BookingAprovedDto dto) {
         Booking booking = bookingRepository.findById(dto.id())
                 .orElseThrow(() -> new NotFoundException("Booking", dto.id()));
 
         if (!Objects.equals(booking.getItem().getOwner().getId(), dto.ownerId())) {
-            throw new AccessForbiddenException("Forbidden to change item not owned by user", dto.ownerId());
+            throw new AccessForbiddenException("Forbidden to change booking for item not owned by user", dto.ownerId());
         }
 
         booking.setStatus(dto.isApproved() ? Status.APPROVED : Status.REJECTED);
@@ -95,11 +99,13 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.toBookingResponseDto(bookingRepository.save(booking));
     }
 
+    @Transactional
     @Override
     public void deleteById(Long id) {
         bookingRepository.deleteById(id);
     }
 
+    @Transactional
     @Override
     public void clear() {
         bookingRepository.deleteAll();
