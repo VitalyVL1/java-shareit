@@ -74,7 +74,7 @@ public class ExceptionHandlerController {
         return new ErrorResponse(
                 "COMMENT_NOT_ALLOWED",
                 "Comment to " + ex.getItemId() + " is not allowed to user: " + ex.getUserId()
-                        + "! Reason: " + ex.getMessage()
+                + "! Reason: " + ex.getMessage()
         );
     }
 
@@ -93,6 +93,13 @@ public class ExceptionHandlerController {
     public ErrorResponse handleDuplicatedDataException(DuplicatedDataException e) {
         log.warn(e.getMessage(), e);
         return new ErrorResponse(e.getFieldName(), e.getMessage());
+    }
+
+    @ExceptionHandler(NoContentException.class)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ErrorResponse handleNoContentException(NoContentException e) {
+        log.warn(e.getMessage(), e);
+        return new ErrorResponse("NO_CONTENT", e.getMessage());
     }
 
     //Обработка всех исключений не учтенных выше

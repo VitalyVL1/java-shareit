@@ -5,11 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.DuplicatedDataException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
-import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -49,8 +49,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("User", userId));
 
         if (dto.email() != null &&
-                !dto.email().equals(user.getEmail()) &&
-                userRepository.existsByEmail(dto.email())) {
+            !dto.email().equals(user.getEmail()) &&
+            userRepository.existsByEmail(dto.email())) {
             throw new DuplicatedDataException("email", dto.email());
         }
 

@@ -49,10 +49,11 @@ public class BookingController {
     @GetMapping("/{bookingId}")
     @ResponseStatus(HttpStatus.OK)
     public BookingResponseDto getBookingById(
-            @PathVariable @Valid @NonNull @Positive Long bookingId
+            @PathVariable @Valid @NonNull @Positive Long bookingId,
+            @RequestHeader("X-Sharer-User-Id") Long userId
     ) {
-        log.info("Getting a booking for {}", bookingId);
-        return bookingService.findById(bookingId);
+        log.info("Getting a booking for {} by user {}", bookingId, userId);
+        return bookingService.findById(bookingId, userId);
     }
 
     @GetMapping

@@ -11,13 +11,42 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    List<Booking> findAllByBooker_IdAndStatus(long bookingId, Status status, Sort sort);
+    List<Booking> findAllByBooker_IdAndStatus(long bookerId, Status status, Sort sort);
 
-    List<Booking> findAllByBooker_Id(long bookingId, Sort sort);
+    List<Booking> findAllByBooker_Id(long bookerId, Sort sort);
+
+    List<Booking> findAllByBooker_IdAndStartAfter(long bookerId, LocalDateTime currentDateTime, Sort sort);
+
+    List<Booking> findAllByBooker_IdAndEndBefore(long bookerId, LocalDateTime currentDateTime, Sort sort);
+
+    @Query("""
+            SELECT b FROM Booking b
+            WHERE b.booker.id = :bookerId
+            AND :currentDateTime BETWEEN b.start AND b.end
+            """)
+    List<Booking> findAllCurrentBookingsByBooker(
+            @Param("bookerId") long bookerId,
+            @Param("currentDateTime") LocalDateTime currentDateTime,
+            Sort sort);
 
     List<Booking> findAllByItem_Owner_IdAndStatus(long ownerId, Status status, Sort sort);
 
     List<Booking> findAllByItem_Owner_Id(long ownerId, Sort sort);
+
+    List<Booking> findAllByItem_Owner_IdAndStartAfter(long ownerId, LocalDateTime currentDateTime, Sort sort);
+
+    List<Booking> findAllByItem_Owner_IdAndEndBefore(long ownerId, LocalDateTime currentDateTime, Sort sort);
+
+    @Query("""
+            SELECT b FROM Booking b
+            JOIN FETCH b.item i
+            WHERE i.owner.id = :ownerId
+            AND :currentDateTime BETWEEN b.start AND b.end
+            """)
+    List<Booking> findAllCurrentBookingsByOwner(
+            @Param("ownerId") long ownerId,
+            @Param("currentDateTime") LocalDateTime currentDateTime,
+            Sort sort);
 
     List<Booking> findAllByBooker_IdAndItem_Id(long bookingId, long itemId, Sort sort);
 
@@ -32,4 +61,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             @Param("itemId") Long itemId,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end);
+
+    boolean existsByBooker_Id(long bookerId);
+
+    boolean existsByItem_Owner_Id(long ownerId);
 }

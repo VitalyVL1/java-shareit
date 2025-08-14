@@ -10,7 +10,7 @@ import java.util.List;
 public interface BookingService {
     BookingResponseDto save(Long bookerId, BookingCreateDto dto);
 
-    BookingResponseDto findById(Long id);
+    BookingResponseDto findById(Long bookingId, Long userId);
 
     List<BookingResponseDto> findByBookerIdAndState(Long bookerId, State state);
 

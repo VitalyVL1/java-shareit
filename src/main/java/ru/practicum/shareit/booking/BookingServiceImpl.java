@@ -11,13 +11,14 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.exception.AccessForbiddenException;
+import ru.practicum.shareit.exception.NoContentException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.UnavailableItemException;
 import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -53,40 +54,91 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingResponseDto findById(Long id) {
-        return bookingRepository.findById(id)
-                .map(BookingMapper::toBookingResponseDto)
-                .orElseThrow(() -> new NotFoundException("Booking", id));
+    public BookingResponseDto findById(Long bookingId, Long userId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException("Booking", bookingId));
+
+        if (!isUserRelatedToBooking(booking, userId)) {
+            throw new AccessForbiddenException("No access to booking " + bookingId, userId);
+        }
+
+        return BookingMapper.toBookingResponseDto(booking);
     }
 
     @Override
     public List<BookingResponseDto> findByBookerIdAndState(Long bookerId, State state) {
-        getUserById(bookerId); // проверка на существование пользователя
-
-        Sort sort = Sort.by(Sort.Direction.DESC, "start");
-
-        if (state.equals(State.ALL)) {
-            return BookingMapper.toBookingResponseDto(
-                    bookingRepository.findAllByBooker_Id(bookerId, sort));
+        if (!userRepository.existsById(bookerId)) {
+            throw new NotFoundException("User", bookerId);
         }
 
-        return BookingMapper.toBookingResponseDto(
-                bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.valueOf(state.name()), sort));
+        if (!bookingRepository.existsByBooker_Id(bookerId)) {
+            throw new NoContentException("Booking");
+        }
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");
+        LocalDateTime now = LocalDateTime.now();
+
+        switch (state) {
+            case ALL -> {
+                return BookingMapper.toBookingResponseDto(
+                        bookingRepository.findAllByBooker_Id(bookerId, sort));
+            }
+            case PAST -> {
+                return BookingMapper.toBookingResponseDto(
+                        bookingRepository.findAllByBooker_IdAndEndBefore(bookerId, now, sort));
+            }
+            case FUTURE -> {
+                return BookingMapper.toBookingResponseDto(
+                        bookingRepository.findAllByBooker_IdAndStartAfter(bookerId, now, sort));
+            }
+            case CURRENT -> {
+                return BookingMapper.toBookingResponseDto(
+                        bookingRepository.findAllCurrentBookingsByBooker(bookerId, now, sort));
+            }
+            case WAITING, REJECTED -> {
+                return BookingMapper.toBookingResponseDto(
+                        bookingRepository.findAllByBooker_IdAndStatus(bookerId, Status.valueOf(state.name()), sort));
+            }
+            default -> throw new IllegalArgumentException("Unknown state: " + state);
+        }
     }
 
     @Override
     public List<BookingResponseDto> findByOwnerIdAndState(Long ownerId, State state) {
-        getUserById(ownerId); // проверка на существование пользователя
-
-        Sort sort = Sort.by(Sort.Direction.DESC, "start");
-
-        if (state.equals(State.ALL)) {
-            return BookingMapper.toBookingResponseDto(
-                    bookingRepository.findAllByItem_Owner_Id(ownerId, sort));
+        if (!userRepository.existsById(ownerId)) {
+            throw new NotFoundException("User", ownerId);
         }
 
-        return BookingMapper.toBookingResponseDto(
-                bookingRepository.findAllByItem_Owner_IdAndStatus(ownerId, Status.valueOf(state.name()), sort));
+        if (!bookingRepository.existsByItem_Owner_Id(ownerId)) {
+            throw new NoContentException("Booking");
+        }
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");
+        LocalDateTime now = LocalDateTime.now();
+
+        switch (state) {
+            case ALL -> {
+                return BookingMapper.toBookingResponseDto(
+                        bookingRepository.findAllByItem_Owner_Id(ownerId, sort));
+            }
+            case PAST -> {
+                return BookingMapper.toBookingResponseDto(
+                        bookingRepository.findAllByItem_Owner_IdAndEndBefore(ownerId, now, sort));
+            }
+            case FUTURE -> {
+                return BookingMapper.toBookingResponseDto(
+                        bookingRepository.findAllByItem_Owner_IdAndStartAfter(ownerId, now, sort));
+            }
+            case CURRENT -> {
+                return BookingMapper.toBookingResponseDto(
+                        bookingRepository.findAllCurrentBookingsByOwner(ownerId, now, sort));
+            }
+            case WAITING, REJECTED -> {
+                return BookingMapper.toBookingResponseDto(
+                        bookingRepository.findAllByItem_Owner_IdAndStatus(ownerId, Status.valueOf(state.name()), sort));
+            }
+            default -> throw new IllegalArgumentException("Unknown state: " + state);
+        }
     }
 
     @Transactional
@@ -116,13 +168,8 @@ public class BookingServiceImpl implements BookingService {
         bookingRepository.deleteAll();
     }
 
-    private User getUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User", userId));
-    }
-
-    private Item getItemById(Long itemId) {
-        return itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("Item", itemId));
+    private boolean isUserRelatedToBooking(Booking booking, Long userId) {
+        return booking.getBooker().getId().equals(userId)
+               || booking.getItem().getOwner().getId().equals(userId);
     }
 }
