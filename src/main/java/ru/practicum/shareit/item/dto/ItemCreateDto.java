@@ -3,20 +3,20 @@ package ru.practicum.shareit.item.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
-import lombok.Data;
-import ru.practicum.shareit.request.model.ItemRequest;
 
-@Data
-@Builder
-public class ItemCreateDto {
-    @NotBlank(message = "Название должно быть указано")
-    private String name;
+public record ItemCreateDto(
+        @NotBlank(message = "Название должно быть указано")
+        String name,
 
-    @NotBlank(message = "Описание должно быть указано")
-    private String description;
+        @NotBlank(message = "Описание должно быть указано")
+        String description,
 
-    @NotNull(message = "Доступность вещи должна быть задана")
-    private Boolean available;
+        @NotNull(message = "Доступность вещи должна быть задана")
+        Boolean available,
 
-    private ItemRequest request; //Если будут передаваться данные о запросе в теле
+        Long requestId // если данные будут передаваться в теле
+) {
+    @Builder
+    public ItemCreateDto {
+    }
 }

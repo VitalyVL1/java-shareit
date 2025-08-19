@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user.mapper;
+package ru.practicum.shareit.user;
 
 import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
@@ -22,12 +22,12 @@ public class UserMapper {
         if (dto == null) return null;
 
         return User.builder()
-                .name(dto.getName())
-                .email(dto.getEmail())
+                .name(dto.name())
+                .email(dto.email())
                 .build();
     }
 
-    public static List<UserResponseDto> toUserResponseDtoList(List<User> users) {
+    public static List<UserResponseDto> toUserResponseDto(List<User> users) {
         if (users == null || users.isEmpty()) return Collections.emptyList();
         return users.stream()
                 .map(UserMapper::toUserResponseDto)
