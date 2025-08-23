@@ -1,11 +1,9 @@
 package ru.practicum.shareit.item.service;
 
-import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.dto.*;
 
 import java.util.List;
 
-@Service
 public interface ItemService {
     ItemResponseDto save(Long userId, ItemCreateDto dto);
 

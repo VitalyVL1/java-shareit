@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.mapper;
 
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -68,16 +69,31 @@ public class ItemMapper {
                 .build();
     }
 
-
-    //добавить заполнение ItemRequest после реализации этого функционала, можно через DataLoader, или третий параметр
-    public static Item toItem(User user, ItemCreateDto dto) {
+    public static Item toItem(User owner, ItemRequest request, ItemCreateDto dto) {
         if (dto == null) return null;
 
         return Item.builder()
                 .name(dto.name())
                 .description(dto.description())
                 .available(dto.available())
-                .owner(user)
+                .owner(owner)
+                .request(request)
                 .build();
+    }
+
+    public static ItemForRequestDto toItemForRequestDto(Item item) {
+        if (item == null) return null;
+        return ItemForRequestDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .ownerId(item.getOwner().getId())
+                .build();
+    }
+
+    public static List<ItemForRequestDto> toItemForRequestDto(List<Item> items) {
+        if (items == null || items.isEmpty()) return Collections.emptyList();
+        return items.stream()
+                .map(ItemMapper::toItemForRequestDto)
+                .toList();
     }
 }

@@ -14,7 +14,7 @@ public record ItemCreateDto(
         @NotNull(message = "Доступность вещи должна быть задана")
         Boolean available,
 
-        Long requestId // если данные будут передаваться в теле
+        Long requestId
 ) {
     @Builder
     public ItemCreateDto {
