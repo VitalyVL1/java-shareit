@@ -17,6 +17,7 @@ import ru.practicum.shareit.exception.UnavailableItemException;
 import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,12 +35,15 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingResponseDto save(Long bookerId, BookingCreateDto dto) {
-        if (!userRepository.existsById(bookerId)) {
-            throw new NotFoundException("User", bookerId);
-        }
+        User booker = userRepository.findById(bookerId)
+                .orElseThrow(() -> new NotFoundException("User", bookerId));
 
         Item item = itemRepository.findById(dto.itemId())
                 .orElseThrow(() -> new NotFoundException("Item", dto.itemId()));
+
+        if (Objects.equals(item.getOwner().getId(), bookerId)) {
+            throw new AccessForbiddenException("Owner cannot book their own item", bookerId);
+        }
 
         if (!item.getAvailable()) {
             throw new UnavailableItemException(item.getId(), "Item is not available");
@@ -49,13 +53,13 @@ public class BookingServiceImpl implements BookingService {
             throw new UnavailableItemException(dto.itemId(), "Item already booked for this period");
         }
 
-        Booking booking = BookingMapper.toBooking(userRepository.getReferenceById(bookerId), item, dto);
+        Booking booking = BookingMapper.toBooking(booker, item, dto);
         return BookingMapper.toBookingResponseDto(bookingRepository.save(booking));
     }
 
     @Override
     public BookingResponseDto findById(Long bookingId, Long userId) {
-        Booking booking = bookingRepository.findById(bookingId)
+        Booking booking = bookingRepository.findByIdWithRelations(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking", bookingId));
 
         if (!isUserRelatedToBooking(booking, userId)) {
@@ -144,11 +148,15 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingResponseDto approve(BookingAprovedDto dto) {
-        Booking booking = bookingRepository.findById(dto.id())
+        Booking booking = bookingRepository.findByIdWithItemAndOwner(dto.id())
                 .orElseThrow(() -> new NotFoundException("Booking", dto.id()));
 
         if (!Objects.equals(booking.getItem().getOwner().getId(), dto.ownerId())) {
             throw new AccessForbiddenException("Forbidden to change booking for item not owned by user", dto.ownerId());
+        }
+
+        if (booking.getStatus() != Status.WAITING) {
+            throw new IllegalStateException("Booking status cannot be changed from " + booking.getStatus());
         }
 
         booking.setStatus(dto.isApproved() ? Status.APPROVED : Status.REJECTED);

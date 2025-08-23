@@ -31,13 +31,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Transactional
     @Override
     public ItemRequestResponseDto save(Long requestorId, ItemRequestCreateDto dto) {
-        User requestor = userRepository.findById(requestorId).orElseThrow(
-                () -> new NotFoundException("User", requestorId)
-        );
-
+        User requestor = getUserOrThrow(requestorId);
+        ItemRequest itemRequest = ItemRequestMapper.toItemRequest(requestor, dto);
         return ItemRequestMapper.toItemRequestResponseDto(
-                itemRequestRepository.save(ItemRequestMapper.toItemRequest(requestor, dto)),
-                Collections.emptyList());
+                itemRequestRepository.save(itemRequest),
+                Collections.emptyList()
+        );
     }
 
     @Override
@@ -59,6 +58,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestResponseDto> findByUserId(Long requestorId) {
+        getUserOrThrow(requestorId);
+
         Map<Long, List<Item>> itemsByRequestIds = itemRepository.findAllByRequest_Requestor_Id(requestorId).stream()
                 .collect(Collectors.groupingBy(item -> item.getRequest().getId()));
         List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestor_Id(
@@ -77,5 +78,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public void clear() {
         itemRequestRepository.deleteAll();
+    }
+
+    private User getUserOrThrow(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User", userId));
     }
 }

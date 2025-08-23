@@ -9,6 +9,7 @@ import ru.practicum.shareit.booking.model.Status;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByBooker_IdAndStatus(long bookerId, Status status, Sort sort);
@@ -65,4 +66,17 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     boolean existsByBooker_Id(long bookerId);
 
     boolean existsByItem_Owner_Id(long ownerId);
+
+    @Query("SELECT b FROM Booking b " +
+           "LEFT JOIN FETCH b.booker " +
+           "LEFT JOIN FETCH b.item " +
+           "LEFT JOIN FETCH b.item.owner " +
+           "WHERE b.id = :id")
+    Optional<Booking> findByIdWithRelations(@Param("id") Long id);
+
+    @Query("SELECT b FROM Booking b " +
+           "LEFT JOIN FETCH b.item " +
+           "LEFT JOIN FETCH b.item.owner " +
+           "WHERE b.id = :id")
+    Optional<Booking> findByIdWithItemAndOwner(@Param("id") Long id);
 }
