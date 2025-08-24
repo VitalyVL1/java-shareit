@@ -1,3 +1,8 @@
+
+
+
+
+
 -- Блок для обнуления таблиц для целей тестирования, удалить из итоговой версии
 DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS bookings;
