@@ -95,9 +95,9 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip> <!-- Полное отключение для проверки прохождения Postman test на GitHub -->
-                        </configuration>
+<!--                        <configuration>
+                            <skip>true</skip> &lt;!&ndash; Полное отключение для проверки прохождения Postman test на GitHub проверки проходят, строки закомментировал
+                        </configuration>-->
                     </plugin>
                 </plugins>
             </build>
