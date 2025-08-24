@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,14 +20,14 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponseDto addUser(@Valid @RequestBody UserCreateDto dto) {
+    public UserResponseDto addUser(@RequestBody UserCreateDto dto) {
         log.info("Adding new user: {}", dto);
         return userService.save(dto);
     }
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public UserResponseDto updateUser(@Valid @RequestBody UserUpdateDto dto, @PathVariable Long id) {
+    public UserResponseDto updateUser(@RequestBody UserUpdateDto dto, @PathVariable Long id) {
         log.info("Updating user: {}", dto);
         return userService.update(id, dto);
     }

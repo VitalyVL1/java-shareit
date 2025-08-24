@@ -1,10 +1,11 @@
 package ru.practicum.shareit.user.dto;
 
+import jakarta.validation.constraints.Email;
 import lombok.Builder;
 
 public record UserUpdateDto(
         String name,
-        String email
+        @Email String email
 ) {
     @Builder
     public UserUpdateDto {

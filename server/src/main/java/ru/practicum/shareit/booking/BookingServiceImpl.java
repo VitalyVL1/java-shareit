@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.dto.BookingAprovedDto;
+import ru.practicum.shareit.booking.dto.BookingApproveDto;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
+import ru.practicum.shareit.booking.dto.State;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.exception.AccessForbiddenException;
 import ru.practicum.shareit.exception.NoContentException;
@@ -147,7 +147,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public BookingResponseDto approve(BookingAprovedDto dto) {
+    public BookingResponseDto approve(BookingApproveDto dto) {
         Booking booking = bookingRepository.findByIdWithItemAndOwner(dto.id())
                 .orElseThrow(() -> new NotFoundException("Booking", dto.id()));
 

@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import ru.practicum.shareit.user.model.User;
 
@@ -22,7 +21,6 @@ public class Comment {
     @Column(name = "comment_id")
     private Long id;
 
-    @NotBlank(message = "Текст комментария не может быть пустым")
     @Column
     private String text;
 

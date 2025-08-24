@@ -1,7 +1,6 @@
 package ru.practicum.shareit.request;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import ru.practicum.shareit.user.model.User;
@@ -23,11 +22,9 @@ public class ItemRequest {
     @Column(name = "request_id")
     Long id;
 
-    @NotNull(message = "Описание должно быть указано")
     @Column
     String description;
 
-    @NotNull(message = "Пользователь должен быть указан")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requestor_id")
     @ToString.Exclude

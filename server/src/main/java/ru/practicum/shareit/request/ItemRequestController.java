@@ -1,7 +1,5 @@
 package ru.practicum.shareit.request;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,7 +20,7 @@ public class ItemRequestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ItemRequestResponseDto addRequest(
-            @Valid @RequestBody ItemRequestCreateDto dto,
+            @RequestBody ItemRequestCreateDto dto,
             @RequestHeader("X-Sharer-User-Id") Long userId
     ) {
         log.info("Adding new request by user: {}", userId);
@@ -40,7 +38,7 @@ public class ItemRequestController {
     @GetMapping("/{requestId}")
     @ResponseStatus(HttpStatus.OK)
     public ItemRequestResponseDto getRequestsById(
-            @PathVariable @Valid @Positive Long requestId) {
+            @PathVariable Long requestId) {
         log.info("Get request by request id: {}", requestId);
         return itemRequestService.findById(requestId);
     }

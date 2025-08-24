@@ -2,13 +2,12 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.Builder;
 
-public record ItemCreateDto(
+public record ItemUpdateDto(
         String name,
         String description,
-        Boolean available,
-        Long requestId
+        Boolean available
 ) {
     @Builder
-    public ItemCreateDto {
+    public ItemUpdateDto {
     }
 }

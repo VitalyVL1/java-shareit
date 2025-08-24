@@ -1,6 +1,5 @@
 package ru.practicum.shareit.exception.handler;
 
-import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -32,22 +31,6 @@ public class ExceptionHandlerController {
                 .toList();
 
         return new ValidationErrorResponse("Validation failed", violations);
-    }
-
-    // Обработка валидации для @RequestParam, @PathVariable
-    @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ValidationErrorResponse handleConstraintViolation(ConstraintViolationException e) {
-        log.warn("Constraint violation: {}", e.getMessage(), e);
-
-        List<Violation> violations = e.getConstraintViolations().stream()
-                .map(violation -> new Violation(
-                        violation.getPropertyPath().toString(),
-                        violation.getMessage(),
-                        violation.getInvalidValue()))
-                .toList();
-
-        return new ValidationErrorResponse("Constraint violation", violations);
     }
 
     @ExceptionHandler(NotFoundException.class)

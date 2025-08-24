@@ -2,10 +2,6 @@ package ru.practicum.shareit.booking.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import ru.practicum.shareit.item.model.Item;
@@ -28,14 +24,10 @@ public class Booking {
     @Column(name = "booking_id")
     private Long id;
 
-    @NotNull(message = "Начало бронирования должно быть указано")
-    @FutureOrPresent(message = "Начало бронирования не должно быть раньше текущей даты")
     @Column(name = "start_date", columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime start;
 
-    @NotNull(message = "Окончание бронирования должно быть указано")
-    @Future(message = "Окончание бронирования должно быть в будущем")
     @Column(name = "end_date", columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime end;
@@ -51,18 +43,9 @@ public class Booking {
     private User booker;
 
     @Builder.Default
-    @NotNull(message = "Статус должен быть проставлен")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status = Status.WAITING;
-
-    @AssertTrue(message = "Дата начала бронирования должна быть раньше даты окончания")
-    public boolean isStartBeforeEnd() {
-        if (start == null || end == null) {
-            return true; // `@NotNull` уже проверяет null, чтобы не дублировать ошибки
-        }
-        return start.isBefore(end);
-    }
 
     @Override
     public final boolean equals(Object object) {

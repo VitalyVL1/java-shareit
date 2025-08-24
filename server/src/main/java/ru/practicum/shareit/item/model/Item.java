@@ -1,8 +1,6 @@
 package ru.practicum.shareit.item.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import ru.practicum.shareit.request.ItemRequest;
@@ -24,19 +22,15 @@ public class Item {
     @Column(name = "item_id")
     private Long id;
 
-    @NotBlank(message = "Название должно быть указано")
     @Column
     private String name;
 
-    @NotBlank(message = "Описание должно быть указано")
     @Column
     private String description;
 
-    @NotNull(message = "Доступность вещи должна быть задана")
     @Column(name = "is_available")
     private Boolean available;
 
-    @NotNull(message = "Владелец должен быть указан")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
     @ToString.Exclude

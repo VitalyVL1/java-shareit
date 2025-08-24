@@ -1,8 +1,6 @@
 package ru.practicum.shareit.user.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -22,12 +20,9 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @NotBlank(message = "Имя должно быть указано")
     @Column
     private String name;
 
-    @Email(message = "Некорректный email")
-    @NotBlank(message = "Email должен быть указан")
     @Column
     private String email;
 

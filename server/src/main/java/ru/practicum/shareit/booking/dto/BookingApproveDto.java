@@ -2,13 +2,13 @@ package ru.practicum.shareit.booking.dto;
 
 import lombok.Builder;
 
-public record BookingAprovedDto(
+public record BookingApproveDto(
         Long id,
         Long ownerId,
         Long itemId,
         Boolean isApproved
 ) {
     @Builder
-    public BookingAprovedDto {
+    public BookingApproveDto {
     }
 }
