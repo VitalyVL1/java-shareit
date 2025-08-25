@@ -16,7 +16,7 @@ public class ItemRequestMapper {
         return ItemRequestResponseDto.builder()
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
-                .requestorID(itemRequest.getRequestor().getId())
+                .requestorId(itemRequest.getRequestor().getId())
                 .items(new HashSet<>(ItemMapper.toItemForRequestDto(items)))
                 .created(itemRequest.getCreated())
                 .build();

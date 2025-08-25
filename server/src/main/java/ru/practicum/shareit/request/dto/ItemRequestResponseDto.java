@@ -10,7 +10,7 @@ import java.util.Set;
 public record ItemRequestResponseDto(
         Long id,
         String description,
-        Long requestorID,
+        Long requestorId,
         Set<ItemForRequestDto> items,
         LocalDateTime created
 ) {
