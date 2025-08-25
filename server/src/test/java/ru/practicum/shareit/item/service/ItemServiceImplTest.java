@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @Import(ItemServiceImpl.class)
-class ItemServiceImplIntegrationTest {
+class ItemServiceImplTest {
 
     @Autowired
     private ItemServiceImpl itemService;

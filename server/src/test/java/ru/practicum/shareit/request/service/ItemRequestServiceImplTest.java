@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @Import(ItemRequestServiceImpl.class)
-class ItemRequestServiceImplIntegrationTest {
+class ItemRequestServiceImplTest {
 
     @Autowired
     private ItemRequestServiceImpl itemRequestService;
