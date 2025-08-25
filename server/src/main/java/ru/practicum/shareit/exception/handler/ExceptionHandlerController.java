@@ -17,22 +17,6 @@ import java.util.List;
 @Slf4j
 public class ExceptionHandlerController {
 
-    // Обработка валидации @Valid
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ValidationErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.warn("Validation error: {}", e.getMessage(), e);
-
-        List<Violation> violations = e.getBindingResult().getFieldErrors().stream()
-                .map(error -> new Violation(
-                        error.getField(),
-                        error.getDefaultMessage(),
-                        error.getRejectedValue()))
-                .toList();
-
-        return new ValidationErrorResponse("Validation failed", violations);
-    }
-
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(NotFoundException e) {
