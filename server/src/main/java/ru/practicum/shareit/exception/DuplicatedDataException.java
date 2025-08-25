@@ -12,10 +12,4 @@ public class DuplicatedDataException extends RuntimeException {
         this.fieldName = fieldName;
         this.duplicatedValue = duplicatedValue;
     }
-
-    public DuplicatedDataException(String fieldName, Object duplicatedValue, String message) {
-        super(message);
-        this.fieldName = fieldName;
-        this.duplicatedValue = duplicatedValue;
-    }
 }
