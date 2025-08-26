@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.practicum.shareit.exception.response.ErrorResponse;
 import ru.practicum.shareit.exception.response.ValidationErrorResponse;
 import ru.practicum.shareit.exception.response.Violation;
 
@@ -45,5 +46,12 @@ public class ExceptionHandlerController {
                 .toList();
 
         return new ValidationErrorResponse("Constraint violation", violations);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIllegalArgumentException(IllegalArgumentException e) {
+        log.warn("Exception: {}", e.getMessage(), e);
+        return new ErrorResponse("IllegalArgument", "Something went wrong");
     }
 }

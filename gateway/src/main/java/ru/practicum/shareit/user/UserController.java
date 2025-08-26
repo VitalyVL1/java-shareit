@@ -1,11 +1,12 @@
 package ru.practicum.shareit.user;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
@@ -14,6 +15,7 @@ import ru.practicum.shareit.user.dto.UserUpdateDto;
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class UserController {
     private final UserClient userClient;
 
@@ -26,7 +28,7 @@ public class UserController {
     @PatchMapping("/{id}")
     public ResponseEntity<Object> updateUser(
             @Valid @RequestBody UserUpdateDto dto,
-            @PathVariable @Valid @NotNull Long id) {
+            @PathVariable @Positive Long id) {
         log.info("Updating user: {}", dto);
         return userClient.updateUser(id, dto);
     }
@@ -38,13 +40,13 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getUserById(@PathVariable @Valid @NotNull Long id) {
+    public ResponseEntity<Object> getUserById(@PathVariable @Positive Long id) {
         log.info("Getting user by id: {}", id);
         return userClient.getUserById(id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteUserById(@PathVariable @Valid @NotNull Long id) {
+    public ResponseEntity<Object> deleteUserById(@PathVariable @Positive Long id) {
         log.info("Deleting user: {}", id);
         return userClient.deleteUserById(id);
     }
