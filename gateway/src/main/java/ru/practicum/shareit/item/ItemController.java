@@ -43,7 +43,7 @@ public class ItemController {
     @GetMapping
     public ResponseEntity<Object> getItemsByOwner(
             @RequestHeader("X-Sharer-User-Id") @Positive @NotNull Long ownerId
-            ) {
+    ) {
         log.info("Retrieving items by owner: {}", ownerId);
         return itemClient.getItemsByOwner(ownerId);
     }

@@ -30,7 +30,7 @@ public class ItemRequestController {
 
     @GetMapping
     public ResponseEntity<Object> getRequestsByUserId(
-            @RequestHeader("X-Sharer-User-Id") @Positive @NotNull  Long userId) {
+            @RequestHeader("X-Sharer-User-Id") @Positive @NotNull Long userId) {
         log.info("Get requests by user: {}", userId);
         return requestClient.getRequestsByUserId(userId);
     }
