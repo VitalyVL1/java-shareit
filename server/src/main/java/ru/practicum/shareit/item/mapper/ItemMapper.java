@@ -40,14 +40,6 @@ public class ItemMapper {
                 .build();
     }
 
-    public static List<ItemShortDto> toItemShortDto(List<Item> items) {
-        if (items == null || items.isEmpty()) return Collections.emptyList();
-
-        return items.stream()
-                .map(ItemMapper::toItemShortDto)
-                .toList();
-    }
-
     public static ItemResponseWithCommentsDto toItemResponseWithCommentsDto(
             Item item,
             LocalDateTime lastBooking,
