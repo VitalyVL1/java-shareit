@@ -52,13 +52,15 @@ public class ItemServiceImpl implements ItemService {
     public ItemResponseWithCommentsDto findById(Long itemId, Long userId) {
         LocalDateTime now = LocalDateTime.now();
         Item item = getItemById(itemId);
-        List<Booking> bookings = bookingRepository.findAllByItem_IdAndStatus(itemId, Status.APPROVED);
+        List<Booking> bookings;
         List<Comment> comments = commentRepository.findAllByItem_Id(itemId);
 
         LocalDateTime lastBooking = null;
         LocalDateTime nextBooking = null;
 
         if (item.getOwner().getId().equals(userId)) {
+            bookings = bookingRepository.findAllByItem_IdAndStatus(itemId, Status.APPROVED);
+
             lastBooking = bookings.stream()
                     .map(Booking::getEnd)
                     .filter(end -> end.isBefore(now))
@@ -87,9 +89,38 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemResponseDto> findByUserId(Long userId) {
+    public List<ItemResponseWithCommentsDto> findByUserId(Long userId) {
         getUserById(userId);
-        return ItemMapper.toItemResponseDto(itemRepository.findAllByOwnerId(userId));
+        List<Item> items = itemRepository.findAllByOwnerId(userId);
+        List<Booking> bookings = bookingRepository.findAllByItem_Owner_IdAndStatus(
+                userId,
+                Status.APPROVED);
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime lastBooking;
+        LocalDateTime nextBooking;
+
+        List<ItemResponseWithCommentsDto> itemResponseDtos = new ArrayList<>();
+
+        for (Item item : items) {
+            lastBooking = bookings.stream()
+                    .filter(booking -> booking.getItem().getId().equals(item.getId()))
+                    .map(Booking::getEnd)
+                    .filter(end -> end.isBefore(now))
+                    .max(Comparator.naturalOrder())
+                    .orElse(null);
+
+            nextBooking = bookings.stream()
+                    .filter(booking -> booking.getItem().getId().equals(item.getId()))
+                    .map(Booking::getStart)
+                    .filter(start -> start.isAfter(now))
+                    .min(Comparator.naturalOrder())
+                    .orElse(null);
+            itemResponseDtos.add(ItemMapper
+                    .toItemResponseWithCommentsDto(item, lastBooking, nextBooking, null));
+        }
+
+        return itemResponseDtos;
     }
 
     @Override

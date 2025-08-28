@@ -11,7 +11,7 @@ public interface ItemService {
 
     List<ItemResponseDto> findAll();
 
-    List<ItemResponseDto> findByUserId(Long userId);
+    List<ItemResponseWithCommentsDto> findByUserId(Long userId);
 
     List<ItemResponseDto> search(String query);
 

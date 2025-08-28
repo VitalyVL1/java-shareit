@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,8 @@ public record ItemResponseWithCommentsDto(
         Long requestId,
         LocalDateTime lastBooking,
         LocalDateTime nextBooking,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL) //исключаем это поле когда оно Null, что бы не перегружать вывод всех Item для владельца комментариями и при этом не создавать отдельный DTO
         List<CommentRequestDto> comments
 ) {
     @Builder

@@ -39,7 +39,7 @@ public class ItemController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemResponseDto> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
+    public List<ItemResponseWithCommentsDto> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
         log.info("Retrieving items by owner: {}", ownerId);
         return itemService.findByUserId(ownerId);
     }

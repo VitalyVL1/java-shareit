@@ -225,7 +225,7 @@ class ItemServiceImplTest {
         Item item2 = createItem(owner, "OwnerItem2", "OwnerDescription2", true, null);
         createItem(otherUser, "OterItem", "OtherDescription", true, null);
 
-        List<ItemResponseDto> userItems = itemService.findByUserId(owner.getId());
+        List<ItemResponseWithCommentsDto> userItems = itemService.findByUserId(owner.getId());
 
         assertEquals(2, userItems.size());
         assertTrue(userItems.stream().allMatch(item ->

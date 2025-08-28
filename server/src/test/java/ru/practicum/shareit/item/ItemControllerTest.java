@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -35,6 +36,7 @@ class ItemControllerTest {
     private MockMvc mvc;
 
     private ItemResponseDto itemResponseDto;
+    private ItemResponseWithCommentsDto itemWithCommentsDto;
     private CommentRequestDto commentRequestDto;
 
     @BeforeEach
@@ -53,6 +55,16 @@ class ItemControllerTest {
                 .available(true)
                 .requestId(1L)
                 .build();
+
+        itemWithCommentsDto =
+                ItemResponseWithCommentsDto.builder()
+                        .id(1L)
+                        .name("name")
+                        .description("description")
+                        .available(true)
+                        .requestId(1L)
+                        .comments(List.of(commentRequestDto))
+                        .build();
     }
 
     @Test
@@ -105,31 +117,35 @@ class ItemControllerTest {
 
     @Test
     void getItemsByOwner() throws Exception {
-        when(itemService.findByUserId(anyLong())).thenReturn(List.of(itemResponseDto));
+        itemWithCommentsDto =
+                ItemResponseWithCommentsDto.builder()
+                        .id(1L)
+                        .name("name")
+                        .description("description")
+                        .lastBooking(LocalDateTime.now().minusHours(1))
+                        .nextBooking(LocalDateTime.now().plusHours(1))
+                        .available(true)
+                        .requestId(1L)
+                        .build();
+
+        when(itemService.findByUserId(anyLong())).thenReturn(List.of(itemWithCommentsDto));
         mvc.perform(get("/items")
                         .header("X-Sharer-User-Id", 1L)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id", is(itemResponseDto.id()), Long.class))
-                .andExpect(jsonPath("$[0].name", is(itemResponseDto.name()), String.class))
-                .andExpect(jsonPath("$[0].description", is(itemResponseDto.description()), String.class))
-                .andExpect(jsonPath("$[0].available", is(itemResponseDto.available()), Boolean.class))
-                .andExpect(jsonPath("$[0].requestId", is(itemResponseDto.requestId()), Long.class));
+                .andExpect(jsonPath("$[0].id", is(itemWithCommentsDto.id()), Long.class))
+                .andExpect(jsonPath("$[0].name", is(itemWithCommentsDto.name()), String.class))
+                .andExpect(jsonPath("$[0].description", is(itemWithCommentsDto.description()), String.class))
+                .andExpect(jsonPath("$[0].available", is(itemWithCommentsDto.available()), Boolean.class))
+                .andExpect(jsonPath("$[0].requestId", is(itemWithCommentsDto.requestId()), Long.class))
+                .andExpect(jsonPath("$[0].lastBooking").value(notNullValue()))
+                .andExpect(jsonPath("$[0].nextBooking").value(notNullValue()))
+                .andExpect(jsonPath("$[0].comments").doesNotHaveJsonPath());
     }
 
     @Test
     void getItemById() throws Exception {
-        ItemResponseWithCommentsDto itemWithCommentsDto =
-                ItemResponseWithCommentsDto.builder()
-                        .id(1L)
-                        .name("name")
-                        .description("description")
-                        .available(true)
-                        .requestId(1L)
-                        .comments(List.of(commentRequestDto))
-                        .build();
-
         when(itemService.findById(anyLong(), anyLong())).thenReturn(itemWithCommentsDto);
         mvc.perform(get("/items/1")
                         .header("X-Sharer-User-Id", 1L)
@@ -141,6 +157,8 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.description", is(itemWithCommentsDto.description()), String.class))
                 .andExpect(jsonPath("$.available", is(itemWithCommentsDto.available()), Boolean.class))
                 .andExpect(jsonPath("$.requestId", is(itemWithCommentsDto.requestId()), Long.class))
+                .andExpect(jsonPath("$.lastBooking").hasJsonPath())
+                .andExpect(jsonPath("$.nextBooking").hasJsonPath())
                 .andExpect(jsonPath(
                         "$.comments[0].id",
                         is(itemWithCommentsDto.comments().getFirst().id()), Long.class))
