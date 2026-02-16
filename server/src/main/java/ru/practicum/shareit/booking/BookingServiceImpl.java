@@ -23,6 +23,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Реализация сервиса {@link BookingService} для управления бронированиями.
+ * <p>
+ * Обеспечивает бизнес-логику для работы с бронированиями: создание, подтверждение,
+ * получение по различным критериям, проверка прав доступа и валидация бизнес-правил.
+ * </p>
+ *
+ * @see BookingService
+ * @see BookingRepository
+ * @see UserRepository
+ * @see ItemRepository
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -32,6 +44,25 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
+    /**
+     * Создает новое бронирование.
+     * <p>
+     * Выполняет следующие проверки:
+     * <ul>
+     *   <li>Существование пользователя и вещи</li>
+     *   <li>Пользователь не является владельцем вещи</li>
+     *   <li>Вещь доступна для бронирования</li>
+     *   <li>Нет активных бронирований на указанный период</li>
+     * </ul>
+     * </p>
+     *
+     * @param bookerId идентификатор пользователя, создающего бронирование
+     * @param dto      DTO с данными для создания бронирования
+     * @return созданное бронирование в виде DTO
+     * @throws NotFoundException если пользователь или вещь не найдены
+     * @throws AccessForbiddenException если владелец пытается забронировать свою вещь
+     * @throws UnavailableItemException если вещь недоступна или уже забронирована на указанный период
+     */
     @Transactional
     @Override
     public BookingResponseDto save(Long bookerId, BookingCreateDto dto) {
@@ -57,6 +88,18 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.toBookingResponseDto(bookingRepository.save(booking));
     }
 
+    /**
+     * Находит бронирование по его идентификатору.
+     * <p>
+     * Доступно только автору бронирования или владельцу вещи.
+     * </p>
+     *
+     * @param bookingId идентификатор бронирования
+     * @param userId    идентификатор пользователя, запрашивающего информацию
+     * @return найденное бронирование в виде DTO
+     * @throws NotFoundException если бронирование не найдено
+     * @throws AccessForbiddenException если пользователь не имеет доступа к бронированию
+     */
     @Override
     public BookingResponseDto findById(Long bookingId, Long userId) {
         Booking booking = bookingRepository.findByIdWithRelations(bookingId)
@@ -69,6 +112,16 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.toBookingResponseDto(booking);
     }
 
+    /**
+     * Находит все бронирования пользователя (арендатора) с фильтрацией по статусу.
+     *
+     * @param bookerId идентификатор пользователя-арендатора
+     * @param state    статус для фильтрации
+     * @return список бронирований пользователя
+     * @throws NotFoundException если пользователь не найден
+     * @throws NoContentException если у пользователя нет бронирований
+     * @throws IllegalArgumentException если передан неизвестный статус
+     */
     @Override
     public List<BookingResponseDto> findByBookerIdAndState(Long bookerId, State state) {
         if (!userRepository.existsById(bookerId)) {
@@ -107,6 +160,16 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+    /**
+     * Находит все бронирования для вещей владельца с фильтрацией по статусу.
+     *
+     * @param ownerId идентификатор владельца вещей
+     * @param state   статус для фильтрации
+     * @return список бронирований для вещей владельца
+     * @throws NotFoundException если пользователь не найден
+     * @throws NoContentException если для вещей владельца нет бронирований
+     * @throws IllegalArgumentException если передан неизвестный статус
+     */
     @Override
     public List<BookingResponseDto> findByOwnerIdAndState(Long ownerId, State state) {
         if (!userRepository.existsById(ownerId)) {
@@ -145,6 +208,19 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+    /**
+     * Подтверждает или отклоняет бронирование.
+     * <p>
+     * Доступно только владельцу вещи. Статус можно изменить только у бронирований
+     * в статусе {@link Status#WAITING}.
+     * </p>
+     *
+     * @param dto DTO с идентификатором бронирования, идентификатором владельца и флагом подтверждения
+     * @return обновленное бронирование в виде DTO
+     * @throws NotFoundException если бронирование не найдено
+     * @throws AccessForbiddenException если пользователь не является владельцем вещи
+     * @throws IllegalStateException если статус бронирования не WAITING
+     */
     @Transactional
     @Override
     public BookingResponseDto approve(BookingApproveDto dto) {
@@ -164,18 +240,39 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.toBookingResponseDto(bookingRepository.save(booking));
     }
 
+    /**
+     * Удаляет бронирование по его идентификатору.
+     *
+     * @param id идентификатор бронирования для удаления
+     */
     @Transactional
     @Override
     public void deleteById(Long id) {
         bookingRepository.deleteById(id);
     }
 
+    /**
+     * Очищает все бронирования из хранилища.
+     * <p>
+     * Используется в основном для тестирования.
+     * </p>
+     */
     @Transactional
     @Override
     public void clear() {
         bookingRepository.deleteAll();
     }
 
+    /**
+     * Проверяет, связан ли пользователь с бронированием.
+     * <p>
+     * Пользователь связан с бронированием, если он является арендатором или владельцем вещи.
+     * </p>
+     *
+     * @param booking бронирование
+     * @param userId  идентификатор пользователя
+     * @return {@code true}, если пользователь связан с бронированием, иначе {@code false}
+     */
     private boolean isUserRelatedToBooking(Booking booking, Long userId) {
         return booking.getBooker().getId().equals(userId)
                || booking.getItem().getOwner().getId().equals(userId);

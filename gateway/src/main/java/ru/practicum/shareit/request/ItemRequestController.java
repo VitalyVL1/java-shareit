@@ -11,6 +11,16 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestCreateDto;
 
+/**
+ * Контроллер для обработки HTTP-запросов, связанных с запросами вещей, в модуле gateway.
+ * <p>
+ * Выполняет первичную валидацию входящих данных и перенаправляет запросы
+ * в соответствующие методы клиента {@link RequestClient}.
+ * </p>
+ *
+ * @see RequestClient
+ * @see ItemRequestCreateDto
+ */
 @Controller
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
@@ -19,6 +29,16 @@ import ru.practicum.shareit.request.dto.ItemRequestCreateDto;
 public class ItemRequestController {
     private final RequestClient requestClient;
 
+    /**
+     * Создает новый запрос вещи.
+     * <p>
+     * HTTP метод: POST /requests
+     * </p>
+     *
+     * @param dto    DTO с описанием запрашиваемой вещи
+     * @param userId идентификатор пользователя, создающего запрос (из заголовка X-Sharer-User-Id)
+     * @return {@link ResponseEntity} с созданным запросом
+     */
     @PostMapping
     public ResponseEntity<Object> addRequest(
             @Valid @RequestBody ItemRequestCreateDto dto,
@@ -28,6 +48,15 @@ public class ItemRequestController {
         return requestClient.addRequest(userId, dto);
     }
 
+    /**
+     * Получает список всех запросов, созданных конкретным пользователем.
+     * <p>
+     * HTTP метод: GET /requests
+     * </p>
+     *
+     * @param userId идентификатор пользователя (из заголовка X-Sharer-User-Id)
+     * @return {@link ResponseEntity} со списком запросов пользователя
+     */
     @GetMapping
     public ResponseEntity<Object> getRequestsByUserId(
             @RequestHeader("X-Sharer-User-Id") @Positive @NotNull Long userId) {
@@ -35,6 +64,15 @@ public class ItemRequestController {
         return requestClient.getRequestsByUserId(userId);
     }
 
+    /**
+     * Получает информацию о конкретном запросе по его идентификатору.
+     * <p>
+     * HTTP метод: GET /requests/{requestId}
+     * </p>
+     *
+     * @param requestId идентификатор запроса (из пути запроса)
+     * @return {@link ResponseEntity} с данными запроса
+     */
     @GetMapping("/{requestId}")
     public ResponseEntity<Object> getRequestsById(
             @PathVariable @Positive Long requestId) {
@@ -42,6 +80,15 @@ public class ItemRequestController {
         return requestClient.getRequestsById(requestId);
     }
 
+    /**
+     * Получает список всех запросов, созданных другими пользователями.
+     * <p>
+     * HTTP метод: GET /requests/all
+     * Используется для просмотра доступных запросов, на которые можно предложить свои вещи.
+     * </p>
+     *
+     * @return {@link ResponseEntity} со списком всех запросов
+     */
     @GetMapping("/all")
     public ResponseEntity<Object> getAllRequests() {
         log.info("Get all requests");
